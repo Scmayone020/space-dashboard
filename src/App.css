@@ -95,7 +95,110 @@ main {
 .loading { color: #8899aa; padding: 1rem 0; }
 .error { color: #f77; padding: 1rem 0; }
 
+.section-header {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #7eb8f7;
+  padding: 2rem 2rem 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-top: 1px solid #1e3a5f;
+  margin-top: 1rem;
+}
+
+/* EPIC */
+.epic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+.epic-item img { width: 100%; border-radius: 8px; aspect-ratio: 1; object-fit: cover; }
+.epic-item p { font-size: 0.75rem; color: #8899aa; text-align: center; margin-top: 0.3rem; }
+
+/* EONET */
+.eonet li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.eonet li:last-child { border-bottom: none; }
+.eonet-icon { font-size: 1.4rem; }
+
+/* Events */
+.event-type { font-weight: 600; }
+.event-date { font-size: 0.82rem; color: #8899aa; }
+.event-body { font-size: 0.8rem; color: #6677aa; margin-top: 0.3rem; }
+
+/* Library */
+.search-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.search-bar input {
+  flex: 1; background: #0a0e1a; border: 1px solid #1e3a5f;
+  color: #e0e6f0; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.9rem;
+}
+.search-bar button {
+  background: #1e3a5f; color: #7eb8f7; border: none;
+  padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer;
+}
+.search-bar button:hover { background: #2a4f7f; }
+.library-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.library-item img { width: 100%; border-radius: 8px; aspect-ratio: 16/9; object-fit: cover; }
+.library-item p { font-size: 0.75rem; color: #8899aa; margin-top: 0.3rem; }
+
+/* Satellites */
+.sat-name { font-weight: 600; }
+.sat-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: #8899aa; flex-wrap: wrap; }
+.satellites li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.satellites li:last-child { border-bottom: none; }
+
+/* Planets / Solar */
+.body-name { font-weight: 600; }
+.body-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: #8899aa; flex-wrap: wrap; }
+.solar-system li, .exoplanets li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.solar-system li:last-child, .exoplanets li:last-child { border-bottom: none; }
+
+/* Exoplanets */
+.planet-name { font-weight: 600; }
+.planet-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: #8899aa; flex-wrap: wrap; }
+
+/* Techport */
+.tech-name { font-weight: 600; }
+.tech-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: #8899aa; }
+.techport li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.techport li:last-child { border-bottom: none; }
+.techport p { font-size: 0.82rem; color: #aabbcc; margin-top: 0.3rem; }
+
+/* Capsules / Cores */
+.capsule-serial { font-weight: 600; }
+.capsule-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: #8899aa; flex-wrap: wrap; }
+.capsules li, .cores li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.capsules li:last-child, .cores li:last-child { border-bottom: none; }
+
+/* Starlink */
+.starlink-count { font-size: 0.82rem; color: #8899aa; margin-bottom: 0.5rem; }
+.starlink li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.starlink li:last-child { border-bottom: none; }
+
+/* Pads */
+.pad-name { color: #8899aa; font-size: 0.85rem; }
+.launchpads li, .landpads li { padding: 0.75rem 0; border-bottom: 1px solid #1a2d42; }
+.launchpads li:last-child, .landpads li:last-child { border-bottom: none; }
+
+/* Crew */
+.crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+.crew-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.crew-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #1e3a5f; margin-bottom: 0.5rem; }
+.crew-name { font-weight: 600; font-size: 0.9rem; }
+.crew-meta { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.78rem; color: #8899aa; align-items: center; }
+
+/* Payloads */
+.payloads li { padding: 0.6rem 0; border-bottom: 1px solid #1a2d42; }
+.payloads li:last-child { border-bottom: none; }
+
+/* History */
+.history li { padding: 0.75rem 0; border-bottom: 1px solid #1a2d42; }
+.history li:last-child { border-bottom: none; }
+
 @media (max-width: 768px) {
   main { grid-template-columns: 1fr; }
   .grid-half { grid-column: 1 / -1; }
+  .epic-grid { grid-template-columns: repeat(2, 1fr); }
+  .library-grid { grid-template-columns: repeat(2, 1fr); }
+  .crew-grid { grid-template-columns: repeat(3, 1fr); }
 }

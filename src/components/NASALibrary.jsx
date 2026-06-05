@@ -6,6 +6,7 @@ export default function NASALibrary() {
   const [input, setInput] = useState('galaxy');
   const [error, setError] = useState(null);
   const [lightbox, setLightbox] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   const search = (q) => {
     setError(null);
@@ -23,6 +24,32 @@ export default function NASALibrary() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  const downloadWallpaper = async () => {
+    setDownloading(true);
+    try {
+      // Try to get the full-resolution image from NASA asset manifest
+      let imageUrl = lightbox.src;
+      if (lightbox.nasaId) {
+        const manifest = await fetch(`https://images-api.nasa.gov/asset/${lightbox.nasaId}`)
+          .then(r => r.json()).catch(() => null);
+        const orig = manifest?.collection?.items?.find(i =>
+          i.href.match(/~orig\.(jpg|png|jpeg)/i)
+        ) || manifest?.collection?.items?.[0];
+        if (orig) imageUrl = orig.href;
+      }
+      const blob = await fetch(imageUrl).then(r => r.blob());
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${lightbox.title?.replace(/[^a-z0-9]/gi, '_') || 'nasa_wallpaper'}.jpg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Download failed. Try right-clicking the image and saving it.');
+    }
+    setDownloading(false);
+  };
 
   return (
     <div className="card nasa-library">
@@ -42,7 +69,7 @@ export default function NASALibrary() {
           const data = item.data?.[0];
           const thumb = item.links?.[0]?.href;
           return (
-            <div key={i} className="library-item" onClick={() => setLightbox({ src: thumb, title: data?.title })} title="Click to enlarge">
+            <div key={i} className="library-item" onClick={() => setLightbox({ src: thumb, title: data?.title, nasaId: data?.nasa_id })} title="Click to enlarge">
               {thumb && <img src={thumb} alt={data?.title} loading="lazy" />}
               <p>{data?.title}</p>
             </div>
@@ -56,6 +83,9 @@ export default function NASALibrary() {
             <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
             <img src={lightbox.src} alt={lightbox.title} />
             <p>{lightbox.title}</p>
+            <button className="wallpaper-btn" onClick={downloadWallpaper} disabled={downloading}>
+              {downloading ? 'Downloading...' : '🖼 Download as Wallpaper'}
+            </button>
           </div>
         </div>
       )}

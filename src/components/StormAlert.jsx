@@ -1,33 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 const KP_LABELS = ['', '', 'Quiet', 'Unsettled', 'Active', 'Minor Storm', 'Moderate Storm', 'Strong Storm', 'Severe Storm', 'Extreme Storm'];
 const KP_COLORS = ['#4caf88', '#4caf88', '#4caf88', '#f0c040', '#f0a020', '#f07020', '#e05030', '#cc2020', '#aa0000', '#880000'];
+
+const KP_POLL_MS = 2 * 60 * 1000;       // Kp index: every 2 minutes
+const FORECAST_POLL_MS = 30 * 60 * 1000; // Forecast: every 30 minutes
 
 export default function StormAlert() {
   const [kp, setKp] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-  useEffect(() => {
-    // Current Kp index (1-minute data)
-    fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+  const fetchKp = useCallback(() => {
+    fetch(`https://services.swpc.noaa.gov/json/planetary_k_index_1m.json?_=${Date.now()}`)
       .then(r => r.json())
       .then(data => {
         const latest = data[data.length - 1];
         setKp(latest);
+        setLastUpdated(new Date());
       })
       .catch(() => setError('Failed to load Kp data'));
+  }, []);
 
-    // 3-day Kp forecast
-    fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json')
+  const fetchForecast = useCallback(() => {
+    fetch(`https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json?_=${Date.now()}`)
       .then(r => r.json())
       .then(data => {
-        // First row is header, skip it
         const rows = data.slice(1).filter(r => r[1] !== null && r[1] !== undefined);
         setForecast(rows.slice(0, 12));
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetchKp();
+    fetchForecast();
+
+    const kpInterval = setInterval(fetchKp, KP_POLL_MS);
+    const forecastInterval = setInterval(fetchForecast, FORECAST_POLL_MS);
+
+    return () => {
+      clearInterval(kpInterval);
+      clearInterval(forecastInterval);
+    };
+  }, [fetchKp, fetchForecast]);
 
   if (error) return null;
   if (!kp) return null;
@@ -45,7 +62,9 @@ export default function StormAlert() {
         </div>
         <div className="storm-info">
           <div className="storm-label" style={{ color }}>{label}</div>
-          <div className="storm-time">Current geomagnetic activity — updated {new Date(kp.time_tag).toLocaleTimeString()}</div>
+          <div className="storm-time">
+            <span className="live-dot" /> Live — NOAA data from {new Date(kp.time_tag).toLocaleTimeString()} · Dashboard polled at {lastUpdated?.toLocaleTimeString()}
+          </div>
           {isStorm && <div className="storm-warning">⚠ Geomagnetic storm in progress — aurora may be visible at lower latitudes</div>}
         </div>
       </div>

@@ -154,7 +154,17 @@ main {
 }
 .kp-value { font-size: 1.2rem; font-weight: 800; color: #000; }
 .storm-label { font-size: 1.4rem; font-weight: 700; }
-.storm-time { font-size: 0.82rem; color: #8899aa; margin-top: 0.2rem; }
+.storm-time { font-size: 0.82rem; color: #8899aa; margin-top: 0.2rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.live-dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: #4caf88; border-radius: 50%;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
 .storm-warning { margin-top: 0.5rem; color: #f0c040; font-size: 0.9rem; font-weight: 600; }
 .kp-forecast { border-top: 1px solid #1e3a5f; padding-top: 1rem; }
 .forecast-label { font-size: 0.85rem; color: #8899aa; margin-bottom: 0.5rem; }

@@ -1,19 +1,26 @@
 import { useEffect, useState } from 'react';
 
+const AURORA_POLL_MS = 30 * 60 * 1000; // 30 minutes
+
 export default function AuroraMap() {
-  const [updated, setUpdated] = useState(null);
-  // NOAA aurora forecast oval images — updated every 30 minutes
-  const northUrl = `https://services.swpc.noaa.gov/images/aurora-forecast-northern-hemisphere.jpg?t=${Date.now()}`;
-  const southUrl = `https://services.swpc.noaa.gov/images/aurora-forecast-southern-hemisphere.jpg?t=${Date.now()}`;
+  const [cacheBust, setCacheBust] = useState(Date.now());
+  const [updated, setUpdated] = useState(new Date().toLocaleTimeString());
 
   useEffect(() => {
-    setUpdated(new Date().toLocaleTimeString());
+    const interval = setInterval(() => {
+      setCacheBust(Date.now());
+      setUpdated(new Date().toLocaleTimeString());
+    }, AURORA_POLL_MS);
+    return () => clearInterval(interval);
   }, []);
+
+  const northUrl = `https://services.swpc.noaa.gov/images/aurora-forecast-northern-hemisphere.jpg?t=${cacheBust}`;
+  const southUrl = `https://services.swpc.noaa.gov/images/aurora-forecast-southern-hemisphere.jpg?t=${cacheBust}`;
 
   return (
     <div className="card aurora-map">
       <h2>Aurora Forecast Oval (NOAA)</h2>
-      {updated && <p className="date">Loaded at {updated} — images update every 30 min</p>}
+      <p className="date"><span className="live-dot" /> Live — last refreshed at {updated} · auto-updates every 30 min</p>
       <div className="aurora-grid">
         <div className="aurora-hemisphere">
           <h3>Northern Hemisphere</h3>

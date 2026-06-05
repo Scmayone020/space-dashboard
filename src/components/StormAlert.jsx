@@ -22,9 +22,9 @@ export default function StormAlert() {
     fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json')
       .then(r => r.json())
       .then(data => {
-        // Skip header row, get next 24 entries
-        const rows = data.slice(1, 25);
-        setForecast(rows);
+        // First row is header, skip it
+        const rows = data.slice(1).filter(r => r[1] !== null && r[1] !== undefined);
+        setForecast(rows.slice(0, 12));
       })
       .catch(() => {});
   }, []);
@@ -58,10 +58,14 @@ export default function StormAlert() {
               const val = Math.round(parseFloat(row[1] || 0));
               const h = Math.max(10, (val / 9) * 60);
               const c = KP_COLORS[Math.min(val, 9)];
+              const d = new Date(row[0]);
+              const timeLabel = isNaN(d.getTime())
+                ? `${i * 3}h`
+                : `${d.getHours()}:00`;
               return (
                 <div key={i} className="forecast-bar-wrap" title={`${row[0]}: Kp${val}`}>
                   <div className="forecast-bar" style={{ height: h, background: c }} />
-                  <div className="forecast-time">{new Date(row[0]).getHours()}h</div>
+                  <div className="forecast-time">{timeLabel}</div>
                 </div>
               );
             })}

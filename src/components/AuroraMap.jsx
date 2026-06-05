@@ -14,9 +14,10 @@ function polarPos(lat, lonWest) {
   };
 }
 
+// Positions manually calibrated to NOAA polar image
 const NORTH_CITIES = [
-  { name: 'Bellevue', lat: 47.6, lon: 122.3, chance: '~15%' },
-  { name: 'Washington DC', lat: 38.9, lon: 77.0, chance: '~3%' },
+  { name: 'Bellevue', left: '24%', top: '62%', chance: '~15%' },
+  { name: 'Washington DC', left: '33%', top: '72%', chance: '~3%' },
 ];
 
 export default function AuroraMap() {
@@ -43,18 +44,15 @@ export default function AuroraMap() {
           <h3>Northern Hemisphere</h3>
           <div className="map-wrap">
             <img src={northUrl} alt="Northern hemisphere aurora forecast" />
-            {NORTH_CITIES.map(city => {
-              const pos = polarPos(city.lat, city.lon);
-              return (
-                <div key={city.name} className="city-pin" style={{ left: pos.left, top: pos.top }}>
-                  <div className="pin-dot" />
-                  <div className="pin-label">
-                    <span className="pin-name">{city.name}</span>
-                    <span className="pin-chance">{city.chance}</span>
-                  </div>
+            {NORTH_CITIES.map(city => (
+              <div key={city.name} className="city-pin" style={{ left: city.left, top: city.top }}>
+                <div className="pin-dot" />
+                <div className="pin-label">
+                  <span className="pin-name">{city.name}</span>
+                  <span className="pin-chance">{city.chance}</span>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
         <div className="aurora-hemisphere">

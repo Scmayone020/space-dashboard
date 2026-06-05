@@ -8,8 +8,11 @@ export default function APOD() {
   useEffect(() => {
     fetch(`${NASA_BASE}/planetary/apod?api_key=${NASA_API_KEY}`)
       .then(r => r.json())
-      .then(setData)
-      .catch(() => setError('Failed to load APOD'));
+      .then(data => {
+        if (data.error || data.code) throw new Error(data.msg || 'API error');
+        setData(data);
+      })
+      .catch(() => setError('Failed to load APOD — NASA API key may need to be refreshed'));
   }, []);
 
   if (error) return <p className="error">{error}</p>;

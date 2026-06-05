@@ -5,9 +5,12 @@ export default function Exoplanets() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name,hostname,disc_year,pl_rade,pl_bmasse,discoverymethod+from+ps+where+default_flag=1+order+by+disc_year+desc&format=json&pagesize=8')
+    fetch('https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+top+8+pl_name,hostname,disc_year,pl_rade,discoverymethod+from+ps+where+default_flag%3D1+order+by+disc_year+desc&format=json')
       .then(r => r.json())
-      .then(data => setPlanets(data.slice(0, 8)))
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) throw new Error('No data');
+        setPlanets(data);
+      })
       .catch(() => setError('Failed to load exoplanet data'));
   }, []);
 

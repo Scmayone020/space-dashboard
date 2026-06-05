@@ -5,11 +5,17 @@ export default function Satellites() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TLE API - fetch a group of satellites (ISS group)
-    fetch('https://tle.ivanstanojevic.me/api/tle/?search=ISS&page-size=8')
+    // celestrak.org is the authoritative public TLE source
+    fetch('https://celestrak.org/SOCRATES/query.php?CODE=ISS&TCA=2026-06-01&DAYS=3&MAX=10&TYPE=JSON&format=json')
       .then(r => r.json())
-      .then(data => setSats(data.member?.slice(0, 8) || []))
-      .catch(() => setError('Failed to load satellite TLE data'));
+      .then(data => setSats(Array.isArray(data) ? data.slice(0, 8) : []))
+      .catch(() => {
+        // Fallback: use celestrak TLE text format
+        fetch('https://celestrak.org/SOCRATES/query.php?CODE=25544&format=json')
+          .then(r => r.json())
+          .then(data => setSats(Array.isArray(data) ? data.slice(0, 8) : []))
+          .catch(() => setError('Failed to load satellite TLE data'));
+      });
   }, []);
 
   if (error) return <p className="error">{error}</p>;

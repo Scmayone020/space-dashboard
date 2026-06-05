@@ -7,10 +7,19 @@ export default function SolarSystem() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Promise.all(
-      BODIES.map(b => fetch(`https://api.le-systeme-solaire.net/rest/bodies/${b}`).then(r => r.json()))
-    )
-      .then(setBodies)
+    fetch('https://api.le-systeme-solaire.net/rest/bodies/?filter[]=isPlanet,eq,1&data=englishName,meanRadius,moons,sideralOrbit,gravity,id')
+      .then(r => r.json())
+      .then(data => {
+        const planets = (data.bodies || []).filter(b => BODIES.includes(b.englishName?.toLowerCase()));
+        if (planets.length) {
+          setBodies(planets);
+        } else {
+          // fallback: fetch individually
+          return Promise.all(
+            BODIES.map(b => fetch(`https://api.le-systeme-solaire.net/rest/bodies/${b}`).then(r => r.json()))
+          ).then(setBodies);
+        }
+      })
       .catch(() => setError('Failed to load solar system data'));
   }, []);
 

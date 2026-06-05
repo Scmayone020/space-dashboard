@@ -6,15 +6,26 @@ export default function Techport() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${NASA_BASE}/techport/api/projects?api_key=${NASA_API_KEY}`)
+    // Fetch projects updated recently using the updatedSince param
+    const since = '2024-01-01';
+    fetch(`${NASA_BASE}/techport/api/projects?updatedSince=${since}&api_key=${NASA_API_KEY}`)
       .then(r => r.json())
       .then(data => {
-        const ids = data.projects?.slice(0, 5) || [];
-        return Promise.all(ids.map(id =>
-          fetch(`${NASA_BASE}/techport/api/projects/${id}?api_key=${NASA_API_KEY}`).then(r => r.json())
-        ));
+        const ids = (data.projects || []).slice(0, 4);
+        if (!ids.length) throw new Error('No projects');
+        return Promise.all(
+          ids.map(id =>
+            fetch(`${NASA_BASE}/techport/api/projects/${id}?api_key=${NASA_API_KEY}`)
+              .then(r => r.json())
+              .catch(() => null)
+          )
+        );
       })
-      .then(results => setProjects(results.map(r => r.project).filter(Boolean)))
+      .then(results => {
+        const valid = results.filter(r => r?.project).map(r => r.project);
+        if (!valid.length) throw new Error('No valid projects');
+        setProjects(valid);
+      })
       .catch(() => setError('Failed to load Techport projects'));
   }, []);
 

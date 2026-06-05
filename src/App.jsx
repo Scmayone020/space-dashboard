@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import APOD from './components/APOD';
 import Launches from './components/Launches';
 import Asteroids from './components/Asteroids';
@@ -22,9 +23,17 @@ import StormAlert from './components/StormAlert';
 import NOAAWeather from './components/NOAAWeather';
 import AuroraMap from './components/AuroraMap';
 import Aurorasaurus from './components/Aurorasaurus';
+import RefreshTimer from './components/RefreshTimer';
 import './App.css';
 
 export default function App() {
+  const [refreshCount, setRefreshCount] = useState(0);
+
+  const handleRefresh = () => setRefreshCount(c => c + 1);
+
+  // refreshKey forces all components to remount and re-fetch on refresh
+  const refreshKey = refreshCount;
+
   return (
     <div className="app">
       <header>
@@ -32,8 +41,10 @@ export default function App() {
         <p>Powered by NASA &amp; SpaceX APIs</p>
       </header>
 
+      <RefreshTimer onRefresh={handleRefresh} refreshCount={refreshCount} />
+
       <section className="section-header storm-section-header">🌌 Space Weather &amp; Aurora</section>
-      <main>
+      <main key={`weather-${refreshKey}`}>
         <div className="grid-full"><StormAlert /></div>
         <div className="grid-full"><AuroraMap /></div>
         <div className="grid-half"><NOAAWeather /></div>
@@ -43,7 +54,7 @@ export default function App() {
       </main>
 
       <section className="section-header">NASA APIs</section>
-      <main>
+      <main key={`nasa-${refreshKey}`}>
         <div className="grid-full"><APOD /></div>
         <div className="grid-full"><EPIC /></div>
         <div className="grid-half"><Asteroids /></div>
@@ -55,7 +66,7 @@ export default function App() {
       </main>
 
       <section className="section-header">SpaceX APIs</section>
-      <main>
+      <main key={`spacex-${refreshKey}`}>
         <div className="grid-full"><Crew /></div>
         <div className="grid-half"><Launches /></div>
         <div className="grid-half"><Rockets /></div>

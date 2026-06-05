@@ -2,25 +2,34 @@ import { useEffect, useState } from 'react';
 
 const AURORA_POLL_MS = 30 * 60 * 1000;
 
-// Polar azimuthal equidistant projection — pole at center, ~30°N at edge
-// angle = degrees clockwise from top (0° = 0°E longitude)
-function polarPos(lat, lonWest) {
-  const maxCoLat = 60; // 30°N at edge
-  const r = ((90 - lat) / maxCoLat) * 49; // % from center
-  const angle = ((360 - lonWest) * Math.PI) / 180;
-  return {
-    left: `${(50 + r * Math.sin(angle)).toFixed(1)}%`,
-    top:  `${(50 - r * Math.cos(angle)).toFixed(1)}%`,
-  };
-}
-
-// Positions manually calibrated to NOAA polar image
-const NORTH_CITIES = [
-  { name: 'Bellevue', left: '24%', top: '62%', chance: '~15%' },
-  { name: 'Washington DC', left: '33%', top: '72%', chance: '~3%' },
+const CITIES = [
+  { name: 'Bellevue, WA',    lat: 47.6, kpNeeded: 5, chance: 15, tz: 'America/Los_Angeles' },
+  { name: 'Washington DC',   lat: 38.9, kpNeeded: 7, chance: 3,  tz: 'America/New_York' },
+  { name: 'Seattle, WA',     lat: 47.6, kpNeeded: 5, chance: 15, tz: 'America/Los_Angeles' },
+  { name: 'New York, NY',    lat: 40.7, kpNeeded: 7, chance: 4,  tz: 'America/New_York' },
+  { name: 'Chicago, IL',     lat: 41.8, kpNeeded: 6, chance: 8,  tz: 'America/Chicago' },
+  { name: 'Minneapolis, MN', lat: 44.9, kpNeeded: 5, chance: 18, tz: 'America/Chicago' },
+  { name: 'Anchorage, AK',   lat: 61.2, kpNeeded: 2, chance: 85, tz: 'America/Anchorage' },
+  { name: 'Calgary, AB',     lat: 51.0, kpNeeded: 4, chance: 40, tz: 'America/Edmonton' },
 ];
 
-export default function AuroraMap() {
+function getChanceColor(chance) {
+  if (chance >= 70) return '#4caf88';
+  if (chance >= 30) return '#f0c040';
+  if (chance >= 10) return '#f07020';
+  return '#cc4444';
+}
+
+function getETA(kpNeeded, currentKp) {
+  if (currentKp >= kpNeeded) return 'Visible Now';
+  const diff = kpNeeded - currentKp;
+  if (diff <= 1) return '~1–2 hrs';
+  if (diff <= 2) return '~3–6 hrs';
+  if (diff <= 3) return 'Next storm';
+  return 'Unlikely tonight';
+}
+
+export default function AuroraMap({ kpVal = 1 }) {
   const [cacheBust, setCacheBust] = useState(Date.now());
   const [updated, setUpdated] = useState(new Date().toLocaleTimeString());
 
@@ -42,24 +51,49 @@ export default function AuroraMap() {
       <div className="aurora-grid">
         <div className="aurora-hemisphere">
           <h3>Northern Hemisphere</h3>
-          <div className="map-wrap">
-            <img src={northUrl} alt="Northern hemisphere aurora forecast" />
-            {NORTH_CITIES.map(city => (
-              <div key={city.name} className="city-pin" style={{ left: city.left, top: city.top }}>
-                <div className="pin-dot" />
-                <div className="pin-label">
-                  <span className="pin-name">{city.name}</span>
-                  <span className="pin-chance">{city.chance}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <img src={northUrl} alt="Northern hemisphere aurora forecast" />
         </div>
         <div className="aurora-hemisphere">
           <h3>Southern Hemisphere</h3>
           <img src={southUrl} alt="Southern hemisphere aurora forecast" />
         </div>
       </div>
+
+      <div className="aurora-city-table">
+        <h3>Aurora Visibility by City</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Kp Needed</th>
+              <th>Chance Tonight</th>
+              <th>Est. Time of Arrival</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CITIES.map(city => {
+              const color = getChanceColor(city.chance);
+              const eta = getETA(city.kpNeeded, kpVal);
+              return (
+                <tr key={city.name}>
+                  <td className="city-name">{city.name}</td>
+                  <td className="city-kp">Kp{city.kpNeeded}+</td>
+                  <td>
+                    <div className="chance-cell">
+                      <div className="chance-bar-track">
+                        <div className="chance-bar-fill" style={{ width: `${city.chance}%`, background: color }} />
+                      </div>
+                      <span className="chance-pct" style={{ color }}>{city.chance}%</span>
+                    </div>
+                  </td>
+                  <td className="eta-cell" style={{ color }}>{eta}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
       <p className="aurora-note">Green/yellow areas indicate where aurora is forecast to be visible. Brighter = stronger activity.</p>
     </div>
   );

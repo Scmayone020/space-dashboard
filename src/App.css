@@ -189,7 +189,27 @@ main {
 .aurora-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem; }
 .aurora-hemisphere h3 { font-size: 0.9rem; color: #8899aa; margin-bottom: 0.5rem; text-align: center; }
 .aurora-hemisphere img { width: 100%; border-radius: 8px; }
-.aurora-note { font-size: 0.8rem; color: #6677aa; font-style: italic; }
+.aurora-note { font-size: 0.8rem; color: #6677aa; font-style: italic; margin-top: 0.75rem; }
+
+/* Aurora City Table */
+.aurora-city-table { margin: 1.25rem 0 0.5rem; }
+.aurora-city-table h3 { font-size: 1rem; color: #7eb8f7; margin-bottom: 0.75rem; }
+.aurora-city-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.aurora-city-table th {
+  text-align: left; color: #8899aa; font-weight: 600;
+  padding: 0.4rem 0.75rem; border-bottom: 1px solid #1e3a5f;
+  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.aurora-city-table td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #111e30; }
+.aurora-city-table tr:last-child td { border-bottom: none; }
+.aurora-city-table tr:hover td { background: #0d1f33; }
+.city-name { font-weight: 600; color: #e0e6f0; }
+.city-kp { color: #8899aa; font-size: 0.8rem; }
+.eta-cell { font-weight: 600; font-size: 0.85rem; }
+.chance-cell { display: flex; align-items: center; gap: 0.6rem; }
+.chance-bar-track { flex: 1; height: 6px; background: #1e3a5f; border-radius: 3px; overflow: hidden; max-width: 120px; }
+.chance-bar-fill { height: 100%; border-radius: 3px; }
+.chance-pct { font-weight: 700; min-width: 36px; font-size: 0.85rem; }
 
 /* City pins on aurora map */
 .map-wrap { position: relative; display: inline-block; width: 100%; }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import APOD from './components/APOD';
 import Launches from './components/Launches';
 import Asteroids from './components/Asteroids';
@@ -26,8 +26,28 @@ import Aurorasaurus from './components/Aurorasaurus';
 import RefreshTimer from './components/RefreshTimer';
 import './App.css';
 
+const KP_POLL_MS = 2 * 60 * 1000;
+
 export default function App() {
   const [refreshCount, setRefreshCount] = useState(0);
+  const [liveKp, setLiveKp] = useState(1);
+
+  const fetchKp = useCallback(() => {
+    fetch(`https://services.swpc.noaa.gov/json/planetary_k_index_1m.json?_=${Date.now()}`)
+      .then(r => r.json())
+      .then(data => {
+        const latest = data[data.length - 1];
+        const val = Math.round(parseFloat(latest?.kp_index || latest?.Kp || 1));
+        setLiveKp(val);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetchKp();
+    const interval = setInterval(fetchKp, KP_POLL_MS);
+    return () => clearInterval(interval);
+  }, [fetchKp]);
 
   const handleRefresh = () => setRefreshCount(c => c + 1);
 
@@ -45,8 +65,8 @@ export default function App() {
 
       <section className="section-header storm-section-header">🌌 Space Weather &amp; Aurora</section>
       <main key={`weather-${refreshKey}`}>
-        <div className="grid-full"><StormAlert /></div>
-        <div className="grid-full"><AuroraMap /></div>
+        <div className="grid-full"><StormAlert kpVal={liveKp} /></div>
+        <div className="grid-full"><AuroraMap kpVal={liveKp} /></div>
         <div className="grid-half"><NOAAWeather /></div>
         <div className="grid-half"><Aurorasaurus /></div>
         <div className="grid-half"><DONKI /></div>

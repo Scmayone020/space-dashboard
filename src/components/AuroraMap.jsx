@@ -3,15 +3,26 @@ import { useEffect, useState } from 'react';
 const AURORA_POLL_MS = 30 * 60 * 1000;
 
 const CITIES = [
-  { name: 'Bellevue, WA',    lat: 47.6, kpNeeded: 5, chance: 15, tz: 'America/Los_Angeles' },
-  { name: 'Washington DC',   lat: 38.9, kpNeeded: 7, chance: 3,  tz: 'America/New_York' },
-  { name: 'Seattle, WA',     lat: 47.6, kpNeeded: 5, chance: 15, tz: 'America/Los_Angeles' },
-  { name: 'New York, NY',    lat: 40.7, kpNeeded: 7, chance: 4,  tz: 'America/New_York' },
-  { name: 'Chicago, IL',     lat: 41.8, kpNeeded: 6, chance: 8,  tz: 'America/Chicago' },
-  { name: 'Minneapolis, MN', lat: 44.9, kpNeeded: 5, chance: 18, tz: 'America/Chicago' },
-  { name: 'Anchorage, AK',   lat: 61.2, kpNeeded: 2, chance: 85, tz: 'America/Anchorage' },
-  { name: 'Calgary, AB',     lat: 51.0, kpNeeded: 4, chance: 40, tz: 'America/Edmonton' },
+  { name: 'Bellevue, WA',    kpNeeded: 5, tz: 'America/Los_Angeles' },
+  { name: 'Washington DC',   kpNeeded: 7, tz: 'America/New_York' },
+  { name: 'Seattle, WA',     kpNeeded: 5, tz: 'America/Los_Angeles' },
+  { name: 'New York, NY',    kpNeeded: 7, tz: 'America/New_York' },
+  { name: 'Chicago, IL',     kpNeeded: 6, tz: 'America/Chicago' },
+  { name: 'Minneapolis, MN', kpNeeded: 5, tz: 'America/Chicago' },
+  { name: 'Anchorage, AK',   kpNeeded: 2, tz: 'America/Anchorage' },
+  { name: 'Calgary, AB',     kpNeeded: 4, tz: 'America/Edmonton' },
 ];
+
+// Dynamic chance based on live Kp vs threshold
+function calcChance(kpNeeded, currentKp) {
+  const deficit = kpNeeded - currentKp;
+  if (deficit <= 0) return 92;
+  if (deficit === 1) return 55;
+  if (deficit === 2) return 28;
+  if (deficit === 3) return 12;
+  if (deficit === 4) return 5;
+  return 2;
+}
 
 const PDT_TZ = 'America/Los_Angeles'; // Bellevue / PST reference
 
@@ -100,7 +111,8 @@ export default function AuroraMap({ kpVal = 1 }) {
           </thead>
           <tbody>
             {CITIES.map(city => {
-              const color = getChanceColor(city.chance);
+              const chance = calcChance(city.kpNeeded, kpVal);
+              const color = getChanceColor(chance);
               const etaHours = getETAHours(city.kpNeeded, kpVal);
               const pdtDiff = getPDTDiff(city.tz);
 
@@ -126,9 +138,9 @@ export default function AuroraMap({ kpVal = 1 }) {
                   <td>
                     <div className="chance-cell">
                       <div className="chance-bar-track">
-                        <div className="chance-bar-fill" style={{ width: `${city.chance}%`, background: color }} />
+                        <div className="chance-bar-fill" style={{ width: `${chance}%`, background: color, transition: 'width 0.6s ease' }} />
                       </div>
-                      <span className="chance-pct" style={{ color }}>{city.chance}%</span>
+                      <span className="chance-pct" style={{ color }}>{chance}%</span>
                     </div>
                   </td>
                   <td className="eta-cell" style={{ color: etaColor }}>{etaDisplay}</td>

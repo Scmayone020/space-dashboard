@@ -18,6 +18,10 @@ import Landpads from './components/Landpads';
 import Crew from './components/Crew';
 import Payloads from './components/Payloads';
 import History from './components/History';
+import StormAlert from './components/StormAlert';
+import NOAAWeather from './components/NOAAWeather';
+import AuroraMap from './components/AuroraMap';
+import Aurorasaurus from './components/Aurorasaurus';
 import './App.css';
 
 export default function App() {
@@ -28,14 +32,22 @@ export default function App() {
         <p>Powered by NASA &amp; SpaceX APIs</p>
       </header>
 
+      <section className="section-header storm-section-header">🌌 Space Weather &amp; Aurora</section>
+      <main>
+        <div className="grid-full"><StormAlert /></div>
+        <div className="grid-full"><AuroraMap /></div>
+        <div className="grid-half"><NOAAWeather /></div>
+        <div className="grid-half"><Aurorasaurus /></div>
+        <div className="grid-half"><DONKI /></div>
+        <div className="grid-half"><EONET /></div>
+      </main>
+
       <section className="section-header">NASA APIs</section>
       <main>
         <div className="grid-full"><APOD /></div>
         <div className="grid-full"><EPIC /></div>
         <div className="grid-half"><Asteroids /></div>
-        <div className="grid-half"><EONET /></div>
         <div className="grid-full"><NASALibrary /></div>
-        <div className="grid-half"><DONKI /></div>
         <div className="grid-half"><Exoplanets /></div>
         <div className="grid-half"><Satellites /></div>
         <div className="grid-half"><Techport /></div>

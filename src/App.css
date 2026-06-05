@@ -106,6 +106,63 @@ main {
   border-top: 1px solid #1e3a5f;
   margin-top: 1rem;
 }
+.storm-section-header {
+  color: #a78bfa;
+  border-top: 1px solid #3b2a6e;
+}
+
+/* Storm Alert Banner */
+.storm-alert-banner {
+  background: #0d1b2a;
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.storm-kp-main { display: flex; align-items: center; gap: 1.5rem; }
+.kp-circle {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.kp-value { font-size: 1.2rem; font-weight: 800; color: #000; }
+.storm-label { font-size: 1.4rem; font-weight: 700; }
+.storm-time { font-size: 0.82rem; color: #8899aa; margin-top: 0.2rem; }
+.storm-warning { margin-top: 0.5rem; color: #f0c040; font-size: 0.9rem; font-weight: 600; }
+.kp-forecast { border-top: 1px solid #1e3a5f; padding-top: 1rem; }
+.forecast-label { font-size: 0.85rem; color: #8899aa; margin-bottom: 0.5rem; }
+.forecast-bars { display: flex; align-items: flex-end; gap: 4px; height: 70px; }
+.forecast-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.forecast-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.3s; }
+.forecast-time { font-size: 0.65rem; color: #8899aa; }
+
+/* NOAA Weather */
+.noaa-weather li { padding: 0.75rem 0; border-bottom: 1px solid #1a2d42; }
+.noaa-weather li:last-child { border-bottom: none; }
+.alert-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
+.solar-wind-bar {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  background: #0a1628; border: 1px solid #1e3a5f;
+  border-radius: 8px; padding: 0.6rem 1rem;
+  font-size: 0.85rem; color: #8899aa; margin-bottom: 1rem;
+}
+.solar-wind-bar strong { color: #7eb8f7; }
+
+/* Aurora Map */
+.aurora-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem; }
+.aurora-hemisphere h3 { font-size: 0.9rem; color: #8899aa; margin-bottom: 0.5rem; text-align: center; }
+.aurora-hemisphere img { width: 100%; border-radius: 8px; }
+.aurora-note { font-size: 0.8rem; color: #6677aa; font-style: italic; }
+
+/* Aurorasaurus */
+.aurora-fallback { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0; }
+.aurora-link {
+  display: inline-block; color: #a78bfa;
+  border: 1px solid #3b2a6e; border-radius: 6px;
+  padding: 0.4rem 0.9rem; font-size: 0.85rem; text-decoration: none;
+}
+.aurora-link:hover { background: #1e1040; }
 
 /* EPIC */
 .epic-grid {

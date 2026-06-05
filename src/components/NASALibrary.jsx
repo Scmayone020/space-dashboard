@@ -5,6 +5,7 @@ export default function NASALibrary() {
   const [query, setQuery] = useState('galaxy');
   const [input, setInput] = useState('galaxy');
   const [error, setError] = useState(null);
+  const [lightbox, setLightbox] = useState(null);
 
   const search = (q) => {
     setError(null);
@@ -16,6 +17,12 @@ export default function NASALibrary() {
   };
 
   useEffect(() => { search(query); }, [query]);
+
+  useEffect(() => {
+    const handler = (e) => e.key === 'Escape' && setLightbox(null);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
     <div className="card nasa-library">
@@ -35,13 +42,23 @@ export default function NASALibrary() {
           const data = item.data?.[0];
           const thumb = item.links?.[0]?.href;
           return (
-            <div key={i} className="library-item">
+            <div key={i} className="library-item" onClick={() => setLightbox({ src: thumb, title: data?.title })} title="Click to enlarge">
               {thumb && <img src={thumb} alt={data?.title} loading="lazy" />}
               <p>{data?.title}</p>
             </div>
           );
         })}
       </div>
+
+      {lightbox && (
+        <div className="lightbox" onClick={() => setLightbox(null)}>
+          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
+            <img src={lightbox.src} alt={lightbox.title} />
+            <p>{lightbox.title}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

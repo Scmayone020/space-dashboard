@@ -37,12 +37,14 @@ function formatLocalTime(hoursFromNow, tz) {
   return t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz });
 }
 
-// Get UTC offset in hours for a timezone right now
+// Reliably get UTC offset in hours using Intl shortOffset format
 function getUTCOffset(tz) {
-  const now = new Date();
-  const utcStr = now.toLocaleString('en-US', { timeZone: 'UTC', hour: 'numeric', hour12: false });
-  const tzStr  = now.toLocaleString('en-US', { timeZone: tz,  hour: 'numeric', hour12: false });
-  return parseInt(tzStr) - parseInt(utcStr);
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' });
+  const parts = formatter.formatToParts(new Date());
+  const tzPart = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+0';
+  const match = tzPart.match(/GMT([+-])(\d+)/);
+  if (!match) return 0;
+  return (match[1] === '+' ? 1 : -1) * parseInt(match[2]);
 }
 
 // Difference from PDT reference

@@ -210,6 +210,7 @@ main {
 .chance-bar-track { flex: 1; height: 6px; background: #1e3a5f; border-radius: 3px; overflow: hidden; max-width: 120px; }
 .chance-bar-fill { height: 100%; border-radius: 3px; }
 .chance-pct { font-weight: 700; min-width: 36px; font-size: 0.85rem; }
+.pdt-diff { color: #8899aa; font-size: 0.82rem; white-space: nowrap; }
 
 /* City pins on aurora map */
 .map-wrap { position: relative; display: inline-block; width: 100%; }

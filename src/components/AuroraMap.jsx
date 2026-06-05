@@ -13,6 +13,8 @@ const CITIES = [
   { name: 'Calgary, AB',     lat: 51.0, kpNeeded: 4, chance: 40, tz: 'America/Edmonton' },
 ];
 
+const PDT_TZ = 'America/Los_Angeles'; // Bellevue / PST reference
+
 function getChanceColor(chance) {
   if (chance >= 70) return '#4caf88';
   if (chance >= 30) return '#f0c040';
@@ -20,13 +22,36 @@ function getChanceColor(chance) {
   return '#cc4444';
 }
 
-function getETA(kpNeeded, currentKp) {
-  if (currentKp >= kpNeeded) return 'Visible Now';
+// Returns estimated arrival offset in hours (null = no specific ETA)
+function getETAHours(kpNeeded, currentKp) {
+  if (currentKp >= kpNeeded) return 0;
   const diff = kpNeeded - currentKp;
-  if (diff <= 1) return '~1–2 hrs';
-  if (diff <= 2) return '~3–6 hrs';
-  if (diff <= 3) return 'Next storm';
-  return 'Unlikely tonight';
+  if (diff <= 1) return 1.5;
+  if (diff <= 2) return 4.5;
+  return null;
+}
+
+// Format a future time in a given timezone
+function formatLocalTime(hoursFromNow, tz) {
+  const t = new Date(Date.now() + hoursFromNow * 3600 * 1000);
+  return t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz });
+}
+
+// Get UTC offset in hours for a timezone right now
+function getUTCOffset(tz) {
+  const now = new Date();
+  const utcStr = now.toLocaleString('en-US', { timeZone: 'UTC', hour: 'numeric', hour12: false });
+  const tzStr  = now.toLocaleString('en-US', { timeZone: tz,  hour: 'numeric', hour12: false });
+  return parseInt(tzStr) - parseInt(utcStr);
+}
+
+// Difference from PDT reference
+function getPDTDiff(tz) {
+  const pdtOffset = getUTCOffset(PDT_TZ);
+  const cityOffset = getUTCOffset(tz);
+  const diff = cityOffset - pdtOffset;
+  if (diff === 0) return '—';
+  return diff > 0 ? `+${diff}h from PDT` : `${diff}h from PDT`;
 }
 
 export default function AuroraMap({ kpVal = 1 }) {
@@ -67,13 +92,31 @@ export default function AuroraMap({ kpVal = 1 }) {
               <th>City</th>
               <th>Kp Needed</th>
               <th>Chance Tonight</th>
-              <th>Est. Time of Arrival</th>
+              <th>Est. Arrival (Local Time)</th>
+              <th>vs PDT (Bellevue)</th>
             </tr>
           </thead>
           <tbody>
             {CITIES.map(city => {
               const color = getChanceColor(city.chance);
-              const eta = getETA(city.kpNeeded, kpVal);
+              const etaHours = getETAHours(city.kpNeeded, kpVal);
+              const pdtDiff = getPDTDiff(city.tz);
+
+              let etaDisplay, etaColor;
+              if (etaHours === 0) {
+                etaDisplay = `Now (${formatLocalTime(0, city.tz)})`;
+                etaColor = '#4caf88';
+              } else if (etaHours !== null) {
+                etaDisplay = `~${formatLocalTime(etaHours, city.tz)} local`;
+                etaColor = '#f0c040';
+              } else if (city.kpNeeded - kpVal <= 3) {
+                etaDisplay = 'Next storm';
+                etaColor = '#f07020';
+              } else {
+                etaDisplay = 'Unlikely tonight';
+                etaColor = '#cc4444';
+              }
+
               return (
                 <tr key={city.name}>
                   <td className="city-name">{city.name}</td>
@@ -86,7 +129,8 @@ export default function AuroraMap({ kpVal = 1 }) {
                       <span className="chance-pct" style={{ color }}>{city.chance}%</span>
                     </div>
                   </td>
-                  <td className="eta-cell" style={{ color }}>{eta}</td>
+                  <td className="eta-cell" style={{ color: etaColor }}>{etaDisplay}</td>
+                  <td className="pdt-diff">{pdtDiff}</td>
                 </tr>
               );
             })}

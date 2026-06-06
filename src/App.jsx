@@ -23,6 +23,7 @@ import StormAlert from './components/StormAlert';
 import NOAAWeather from './components/NOAAWeather';
 import AuroraMap from './components/AuroraMap';
 import Aurorasaurus from './components/Aurorasaurus';
+import AuroraPhotos from './components/AuroraPhotos';
 import RefreshTimer from './components/RefreshTimer';
 import './App.css';
 
@@ -68,7 +69,7 @@ export default function App() {
         <div className="grid-full"><StormAlert kpVal={liveKp} /></div>
         <div className="grid-full"><AuroraMap kpVal={liveKp} /></div>
         <div className="grid-half"><NOAAWeather /></div>
-        <div className="grid-half"><Aurorasaurus /></div>
+        <div className="grid-full"><AuroraPhotos /></div>
         <div className="grid-half"><DONKI /></div>
         <div className="grid-half"><EONET /></div>
       </main>
